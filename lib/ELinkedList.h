@@ -11,11 +11,11 @@
 #include "ENode.h"
 
 /*!
- * \brief   singly linked list implementation.
+ * \brief    singly linked list implementation.
  *
  * \tparam T type of values stored in the list.
  *
- * \note    designed for EHash chaining; no size caching or iterator support.
+ * \note     designed for EHash chaining; no size caching or iterator support.
  */
 template<typename T> class ELinkedList
 {
@@ -39,10 +39,10 @@ template<typename T> class ELinkedList
     /*!
      * \brief   find first element matching a predicate.
      *
-     * \tparam Pred predicate type: bool(const T&)
-     * \param pred function/lambda to test elements.
+     * \tparam  Pred predicate type: bool(const T&)
+     * \param   pred function/lambda to test elements.
      *
-     * \return pointer to value if found, nullptr otherwise.
+     * \return  pointer to value if found, nullptr otherwise.
      *
      * \note    returns pointer so EHash can update values directly.
      */
@@ -60,10 +60,10 @@ template<typename T> class ELinkedList
     /*!
      * \brief   remove first element matching a predicate.
      *
-     * \tparam Pred predicate type: bool(const T&)
-     * \param pred function/lambda to test elements.
+     * \tparam  Pred predicate type: bool(const T&)
+     * \param   pred function/lambda to test elements.
      *
-     * \return true if element was removed, false otherwise.
+     * \return  true if element was removed, false otherwise.
      *
      * \note    carefully updates pointers; deletes node to avoid leaks.
      */

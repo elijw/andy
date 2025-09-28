@@ -6,7 +6,7 @@
  *
  * \brief   simple hashmap using separate chaining with linked lists.
  *
- * \note    hi rival; header-only template.
+ * \note    hi rival
  * \todo    error handling (optional at the moment)
  */
 
@@ -18,8 +18,8 @@
 /*!
  * \brief   hashmap implementation.
  *
- * \tparam K key type.
- * \tparam V value type.
+ * \tparam  K key type.
+ * \tparam  V value type.
  *
  * \note    uses std::hash internally; separate chaining with ELinkedList.
  */
@@ -41,8 +41,8 @@ template<typename K, typename V> class EHash
     /*!
      * \brief   compute hash index for a key.
      *
-     * \param key key to hash
-     * \return bucket index
+     * \param   key key to hash
+     * \return  bucket index
      *
      * \note    uses std::hash<K>; modulo buckets.size().
      */
@@ -78,15 +78,15 @@ template<typename K, typename V> class EHash
     /*!
      * \brief   construct new hash map.
      *
-     * \param size initial number of buckets (default: 8)
+     * \param   size initial number of buckets (default: 8)
      */
     explicit EHash(size_t size = 8) : buckets(size) {}
 
     /*!
      * \brief   insert or update a key-value pair.
      *
-     * \param key key to insert
-     * \param value value to insert
+     * \param   key key to insert
+     * \param   value value to insert
      *
      * \note    if key exists, value is overwritten.
      */
@@ -133,8 +133,8 @@ template<typename K, typename V> class EHash
     /*!
      * \brief   remove value by key.
      *
-     * \param key key to remove
-     * \return true if removed, false otherwise
+     * \param   key key to remove
+     * \return  true if removed, false otherwise
      *
      * \note    returns false if key not found; does not throw.
      */
@@ -149,5 +149,3 @@ template<typename K, typename V> class EHash
         return false;
     }
 };
-
-;
