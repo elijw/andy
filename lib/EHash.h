@@ -1,10 +1,11 @@
+
 /*!
  * \file    lib/EHash.h
  * \date    2025-09-22
  * \author  elijw
  * \license MIT
  *
- * \brief   simple hashmap using separate chaining with linked lists.
+ * \brief   simple hashmap using separate chaining with std::list.
  *
  * \note    hi rival
  * \todo    error handling (optional at the moment)
@@ -12,8 +13,8 @@
 
 #pragma once
 #include <vector>
+#include <list>
 #include <functional>
-#include "ELinkedList.h"
 
 /*!
  * \brief   hashmap implementation.
@@ -21,7 +22,7 @@
  * \tparam  K key type.
  * \tparam  V value type.
  *
- * \note    uses std::hash internally; separate chaining with ELinkedList.
+ * \note    uses std::hash internally; separate chaining with std::list.
  */
 template<typename K, typename V> class EHash
 {
@@ -34,17 +35,12 @@ template<typename K, typename V> class EHash
         V value; //!< associated value
     };
 
-    std::vector<ELinkedList<Pair>> buckets; //!< array of buckets
-    size_t numElements = 0;                 //!< number of elements
-    float maxLoad = 0.75f;                  //!< load factor threshold
+    std::vector<std::list<Pair>> buckets; //!< array of buckets
+    size_t numElements = 0;               //!< number of elements
+    float maxLoad = 0.75f;                //!< load factor threshold
 
     /*!
      * \brief   compute hash index for a key.
-     *
-     * \param   key key to hash
-     * \return  bucket index
-     *
-     * \note    uses std::hash<K>; modulo buckets.size().
      */
     size_t hashKey(const K& key) const
     {
@@ -53,99 +49,71 @@ template<typename K, typename V> class EHash
 
     /*!
      * \brief   double bucket size and rehash all elements.
-     *
-     * \note    called automatically when load factor > maxLoad.
-     *          simple O(n) operation; old nodes are re-inserted.
      */
     void rehash()
     {
-        std::vector<ELinkedList<Pair>> old = buckets;
+        std::vector<std::list<Pair>> old = buckets;
         buckets.clear();
         buckets.resize(old.size() * 2);
 
-        for (auto& list : old)
+        for (auto& bucket : old)
         {
-            ENode<Pair>* node = list.head;
-            while (node)
+            for (auto& pair : bucket)
             {
-                insert(node->value.key, node->value.value);
-                node = node->next;
+                insert(pair.key, pair.value);
             }
         }
     }
 
   public:
-    /*!
-     * \brief   construct new hash map.
-     *
-     * \param   size initial number of buckets (default: 8)
-     */
     explicit EHash(size_t size = 8) : buckets(size) {}
 
-    /*!
-     * \brief   insert or update a key-value pair.
-     *
-     * \param   key key to insert
-     * \param   value value to insert
-     *
-     * \note    if key exists, value is overwritten.
-     */
     void insert(const K& key, const V& value)
     {
-        /* rehash if load factor exceeded */
         if ((float)numElements / buckets.size() > maxLoad)
         {
             rehash();
         }
 
         size_t idx = hashKey(key);
-
-        /* find existing key */
-        Pair* found =
-            buckets[idx].find([&](const Pair& p) { return p.key == key; });
-        if (found)
+        for (auto& pair : buckets[idx])
         {
-            found->value = value;
-            return;
+            if (pair.key == key)
+            {
+                pair.value = value;
+                return;
+            }
         }
 
-        /* insert new pair at bucket head */
-        buckets[idx].insert({key, value});
+        buckets[idx].push_front({key, value});
         numElements++;
     }
 
-    /*!
-     * \brief   find value by key.
-     *
-     * \param key key to search
-     * \return pointer to value if found, nullptr otherwise
-     *
-     * \note    nullptr return is intentional; no exception thrown.
-     */
     V* find(const K& key)
     {
         size_t idx = hashKey(key);
-        Pair* found =
-            buckets[idx].find([&](const Pair& p) { return p.key == key; });
-        return found ? &found->value : nullptr;
+        for (auto& pair : buckets[idx])
+        {
+            if (pair.key == key) return &pair.value;
+        }
+        return nullptr;
     }
 
-    /*!
-     * \brief   remove value by key.
-     *
-     * \param   key key to remove
-     * \return  true if removed, false otherwise
-     *
-     * \note    returns false if key not found; does not throw.
-     */
     bool remove(const K& key)
     {
         size_t idx = hashKey(key);
-        if (buckets[idx].remove([&](const Pair& p) { return p.key == key; }))
+        auto& bucket = buckets[idx];
+        for (auto it = bucket.begin(); it != bucket.end(); ++it)
         {
-            numElements--;
-            return true;
+            if (it->key == key)
+            {
+                bucket.erase(it);
+                numElements--;
+                return true;
+            }
         }
         return false;
     }
 };
+
+;
